@@ -1,0 +1,17 @@
+fastapi~=0.116.1
+granian~=2.5.7
+uv~=0.9.8
+sqlalchemy~=2.0.43
+psycopg2-binary~=2.9.10
+asyncpg~=0.30.0
+pydantic-settings~=2.10.1
+passlib~=1.7.4
+bcrypt==3.2.2
+pyjwt~=2.10.1
+httpx~=0.28.1
+python-dotenv~=1.1.1
+aiohttp~=3.12.15
+pydantic~=2.11.7
+greenlet~=3.2.4
+pytimeparse==1.1.8
+python-json-logger~=4.0.0

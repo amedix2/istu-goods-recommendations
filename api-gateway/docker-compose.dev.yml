@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    container_name: user-db-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DB_NAME}
+      POSTGRES_USER: ${PG_ADMIN}
+      POSTGRES_PASSWORD: ${PG_ADMIN_PASS}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api-gateway-test:
+    container_name: api-gateway-test
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: pytest /src/tests/ -v
+    env_file:
+      - ./.env
+
+  api-gateway:
+    depends_on:
+      postgres:
+        condition: service_started
+      api-gateway-test:
+        condition: service_completed_successfully
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${PORT}:8000"
+    env_file:
+      - ./.env
+
+
+volumes:
+  postgres_data:
