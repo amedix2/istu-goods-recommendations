@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, Response, Cookie
+from fastapi import APIRouter, Depends, Response, Cookie, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
@@ -12,9 +12,9 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=TokenSchema)
-async def register(user: UserSchema, response: Response, db: AsyncSession = Depends(get_session)):
+async def register(user: UserSchema, response: Response, request: Request, db: AsyncSession = Depends(get_session)):
     logger.info("Register endpoint called", extra={"username": user.username})
-    return await register_user(db, user, response)
+    return await register_user(db, user, response, request)
 
 
 @router.post("/login", response_model=TokenSchema)

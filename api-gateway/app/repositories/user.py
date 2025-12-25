@@ -1,6 +1,6 @@
 import logging
 from asyncio import to_thread
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import User
@@ -57,3 +57,15 @@ async def authenticate_user(db: AsyncSession, username: str, password: str) -> U
         return None
     logger.debug("User authenticated successfully", extra={"user_id": user.id})
     return user
+
+
+async def _delete_user_by_id(db: AsyncSession, user_id: int) -> None:
+    """Удаляет пользователя по ID. Используется для отката при ошибках регистрации."""
+    logger.warning("Compensating transaction: deleting user", extra={"user_id": user_id})
+    try:
+        await db.execute(delete(User).where(User.id == user_id))
+        await db.commit()
+        logger.info("User deleted successfully during compensation", extra={"user_id": user_id})
+    except Exception as e:
+        await db.rollback()
+        logger.error("Failed to delete user during compensation", extra={"user_id": user_id, "error": str(e)})

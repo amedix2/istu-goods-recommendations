@@ -9,4 +9,4 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
     display_name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str | None] = mapped_column(nullable=True)
-    email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(unique=True, nullable=True)

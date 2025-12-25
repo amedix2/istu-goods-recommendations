@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class BaseUser(BaseModel):
     username: str
     display_name: str
-    email: str
+    email: str | None = None
     description: str | None = None
 
     model_config = {"from_attributes": True}
