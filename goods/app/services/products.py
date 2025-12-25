@@ -8,7 +8,7 @@ from app.repositories.product import (
     update_product,
     delete_product
 )
-from app.schemas import ProductCreateSchema, ProductSchema, ProductUpdateSchema
+from app.schemas import ProductCreateSchema, ProductSchema, ProductUpdateSchema, ProductShortSchema
 from app.exceptions import ConflictError, NotFoundError, ForbiddenError
 
 logger = logging.getLogger(__name__)
@@ -47,10 +47,10 @@ async def get_product_details(db: AsyncSession, product_id: int) -> ProductSchem
     return ProductSchema.model_validate(product)
 
 
-async def list_products(db: AsyncSession, skip: int = 0, limit: int = 10) -> list[ProductSchema]:
+async def list_products(db: AsyncSession, skip: int = 0, limit: int = 10) -> list[ProductShortSchema]:
     logger.info("Listing products")
     products = await get_all_products(db, skip=skip, limit=limit, joined_load=False)
-    return [ProductSchema.model_validate(p) for p in products]
+    return [ProductShortSchema.model_validate(p) for p in products]
 
 
 async def update_product_service(

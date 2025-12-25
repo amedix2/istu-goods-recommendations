@@ -43,9 +43,12 @@ class ProductUpdateSchema(BaseModel):
     image_url: str | None = None
 
 
-class ProductSchema(BaseProduct):
+class ProductShortSchema(BaseProduct):
     id: int
-    user_id: int  # Добавил поле
+    user_id: int
     rating: float
     reviews_count: int
+
+
+class ProductSchema(ProductShortSchema):
     reviews: list[ReviewSchema] = []

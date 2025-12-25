@@ -8,8 +8,9 @@ from app.services.products import (
     get_product_details,
     update_product_service,
     delete_product_service,
+    list_products
 )
-from app.schemas import ProductCreateSchema, ProductUpdateSchema, ProductSchema
+from app.schemas import ProductCreateSchema, ProductUpdateSchema, ProductSchema, ProductShortSchema
 from app.utils.auth import get_auth_user_id
 
 logger = logging.getLogger(__name__)
@@ -53,3 +54,13 @@ async def delete_product(
     logger.info("Delete product endpoint called", extra={"product_id": product_id, "user_id": auth_user_id})
     await delete_product_service(db, product_id, user_id=auth_user_id)
     return {"detail": "Product deleted"}
+
+
+@router.get("/", response_model=list[ProductShortSchema])
+async def get_products(
+        skip: int = 0,
+        limit: int = 10,
+        db: AsyncSession = Depends(get_session)
+):
+    logger.info("List products endpoint called", extra={"skip": skip, "limit": limit})
+    return await list_products(db, skip=skip, limit=limit)
