@@ -14,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from app.config import settings as app_settings
 from app.database import Base, get_session
 from app.main import app
-from app.models import Media, User
+from app.models import User
 
 app_settings.DEBUG = True
 app_settings.LOG_LEVEL = logging.ERROR
@@ -54,11 +54,10 @@ async def setup_database():
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def clear_tables():
-    """Очищает таблицы Media и User после каждого теста."""
+    """Очищает таблицу User после каждого теста."""
     yield
     async with async_session_maker() as session:
         async with session.begin():
-            await session.execute(delete(Media))
             await session.execute(delete(User))
         await session.commit()
 
@@ -93,20 +92,3 @@ async def test_user() -> User:
         await session.commit()
         await session.refresh(user)
         return user
-
-
-@pytest_asyncio.fixture(scope="function")
-async def test_media(test_user: User) -> Media:
-    """Создаёт и возвращает тестовое медиа для пользователя."""
-    async with async_session_maker() as session:
-        media = Media(
-            user_id=test_user.user_id,
-            file_path="test_path.jpg",
-            file_path_thumb="test_thumb.jpg",
-            description="Test media",
-            is_avatar=True,
-        )
-        session.add(media)
-        await session.commit()
-        await session.refresh(media)
-        return media

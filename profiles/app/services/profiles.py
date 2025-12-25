@@ -17,35 +17,17 @@ async def create_user_service(db: AsyncSession, user_id: int, user_data: UserCre
     except IntegrityError:
         raise ConflictError("User with such data already exists")
     logger.info("User created successfully", extra={"user_id": user.user_id})
-    return UserSchema(
-        user_id=user.user_id,
-        username=user.username,
-        display_name=user.display_name,
-        email=user.email,
-        description=user.description,
-        media=[],
-    )
+    return UserSchema.model_validate(user)
 
 
 async def get_user_profile(db: AsyncSession, user_id: int) -> UserSchema:
-    """Получение полного профиля с медиа."""
+    """Получение полного профиля."""
     logger.info("Getting user profile", extra={"user_id": user_id})
-    user = await get_user_by_id(db, user_id, joined_load=True)
+    user = await get_user_by_id(db, user_id)
     if not user:
         raise NotFoundError("User not found")
     logger.info("User retrieved successfully", extra={"user_id": user.user_id})
     return UserSchema.model_validate(user)
-
-
-async def get_user_brief(db: AsyncSession, user_id: int) -> UserBriefSchema:
-    """Получение краткой информации о профиле."""
-    logger.info("Getting user brief profile", extra={"user_id": user_id})
-    user = await get_user_by_id(db, user_id, joined_load=True)
-    if not user:
-        raise NotFoundError("User not found")
-    avatar_thumb = next((m.file_path_thumb for m in user.media if m.is_avatar), None)
-    logger.info("User brief retrieved successfully", extra={"user_id": user.user_id})
-    return UserBriefSchema(user_id=user.user_id, display_name=user.display_name, avatar_thumb=avatar_thumb)
 
 
 async def update_user_service(db: AsyncSession, user_id: int, update_data: UserUpdateSchema) -> UserSchema:
@@ -54,7 +36,7 @@ async def update_user_service(db: AsyncSession, user_id: int, update_data: UserU
     fields = update_data.model_dump(exclude_unset=True)
     if not fields:
         raise ConflictError("No fields to update")
-    user = await get_user_by_id(db, user_id, joined_load=True)
+    user = await get_user_by_id(db, user_id)
     if not user:
         raise NotFoundError("User not found")
     try:

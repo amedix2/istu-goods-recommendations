@@ -6,7 +6,6 @@ from app.database import get_session
 from app.services.profiles import (
     create_user_service,
     get_user_profile,
-    get_user_brief,
     update_user_service,
     delete_user_service,
 )
@@ -37,25 +36,10 @@ async def get_profile_self(
     return await get_user_profile(db, auth_user_id)
 
 
-@router.get("/brief", response_model=UserBriefSchema)
-async def get_profile_brief_self(
-        db: AsyncSession = Depends(get_session),
-        auth_user_id: int = Depends(get_auth_user_id),
-):
-    logger.info("Get self brief profile endpoint called", extra={"user_id": auth_user_id})
-    return await get_user_brief(db, auth_user_id)
-
-
 @router.get("/{user_id}", response_model=UserSchema)
 async def get_profile(user_id: int, db: AsyncSession = Depends(get_session)):
     logger.info("Get profile endpoint called", extra={"user_id": user_id})
     return await get_user_profile(db, user_id)
-
-
-@router.get("/{user_id}/brief", response_model=UserBriefSchema)
-async def get_profile_brief(user_id: int, db: AsyncSession = Depends(get_session)):
-    logger.info("Get brief profile endpoint called", extra={"user_id": user_id})
-    return await get_user_brief(db, user_id)
 
 
 @router.put("/", response_model=UserSchema)

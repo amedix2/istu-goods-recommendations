@@ -1,7 +1,6 @@
-# tests/test_profiles.py
 import pytest
 from httpx import AsyncClient
-from app.models import User, Media
+from app.models import User
 from conftest import async_session_maker
 
 
@@ -20,7 +19,6 @@ async def test_create_profile_success(async_client: AsyncClient):
     data = response.json()
     assert data["user_id"] == 2
     assert data["username"] == "newuser"
-    assert data["media"] == []
 
 
 @pytest.mark.asyncio
@@ -38,15 +36,13 @@ async def test_create_profile_conflict(async_client: AsyncClient, test_user: Use
 
 
 @pytest.mark.asyncio
-async def test_get_profile_self_success(async_client: AsyncClient, test_user: User, test_media: Media):
+async def test_get_profile_self_success(async_client: AsyncClient, test_user: User):
     """Проверка получения своего полного профиля."""
     headers = {"X-Auth-User-ID": "1"}
     response = await async_client.get("/profile/", headers=headers)
     assert response.status_code == 200
     data = response.json()
     assert data["user_id"] == 1
-    assert len(data["media"]) == 1
-    assert data["media"][0]["id"] == test_media.id
 
 
 @pytest.mark.asyncio
@@ -59,25 +55,12 @@ async def test_get_profile_self_not_found(async_client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_get_profile_brief_self_success(async_client: AsyncClient, test_user: User, test_media: Media):
-    """Проверка получения своей краткой информации."""
-    headers = {"X-Auth-User-ID": "1"}
-    response = await async_client.get("/profile/brief", headers=headers)
-    assert response.status_code == 200
-    data = response.json()
-    assert data["user_id"] == 1
-    assert data["display_name"] == "Test User"
-    assert data["avatar_thumb"] == "test_thumb.jpg"
-
-
-@pytest.mark.asyncio
-async def test_get_profile_success(async_client: AsyncClient, test_user: User, test_media: Media):
+async def test_get_profile_success(async_client: AsyncClient, test_user: User):
     """Проверка получения полного профиля другого пользователя."""
     response = await async_client.get("/profile/1")
     assert response.status_code == 200
     data = response.json()
     assert data["user_id"] == 1
-    assert len(data["media"]) == 1
 
 
 @pytest.mark.asyncio
@@ -86,16 +69,6 @@ async def test_get_profile_not_found(async_client: AsyncClient):
     response = await async_client.get("/profile/999")
     assert response.status_code == 404
     assert response.json()["error"] == "NotFoundError"
-
-
-@pytest.mark.asyncio
-async def test_get_profile_brief_success(async_client: AsyncClient, test_user: User, test_media: Media):
-    """Проверка получения краткой информации другого пользователя."""
-    response = await async_client.get("/profile/1/brief")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["user_id"] == 1
-    assert data["avatar_thumb"] == "test_thumb.jpg"
 
 
 @pytest.mark.asyncio
@@ -133,7 +106,6 @@ async def test_update_profile_self_no_fields(async_client: AsyncClient, test_use
 @pytest.mark.asyncio
 async def test_update_profile_self_conflict(async_client: AsyncClient, test_user: User):
     """Проверка обновления с конфликтующими данными (дубликат email)."""
-    # Сначала создадим второго пользователя
     async with async_session_maker() as session:
         user2 = User(
             user_id=2,

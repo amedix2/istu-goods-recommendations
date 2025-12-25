@@ -1,7 +1,6 @@
 import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 
 from app.models import User
 
@@ -36,17 +35,13 @@ async def create_user(
     return user
 
 
-async def get_user_by_id(db: AsyncSession, user_id: int, joined_load: bool = False) -> User | None:
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
     """Возвращает пользователя по user_id."""
     logger.debug("Fetching user by ID", extra={"user_id": user_id})
     stmt = select(User).where(User.user_id == user_id)
-    if joined_load:
-        stmt = stmt.options(joinedload(User.media))
     result = await db.execute(stmt)
-    if joined_load:
-        user = result.unique().scalar_one_or_none()
-    else:
-        user = result.scalar_one_or_none()
+    user = result.scalar_one_or_none()
+
     if user:
         logger.debug("User found", extra={"user_id": user_id})
     else:
