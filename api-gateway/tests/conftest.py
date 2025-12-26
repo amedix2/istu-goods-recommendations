@@ -3,6 +3,7 @@ import sys
 import os
 from typing import AsyncGenerator
 from datetime import datetime, timedelta, timezone
+from unittest.mock import AsyncMock, patch, MagicMock
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -19,7 +20,7 @@ from app.models import RefreshToken, User
 from app.utils.auth import get_password_hash
 
 # Настройка тестовых значений
-app_settings.MICRO_SERVICES = {"mock_service": "http://mock_service:8000"}
+app_settings.MICRO_SERVICES = {"mock_service": "http://mock_service:8000", "profiles": "http://mock-profile-service"}
 app_settings.JWT_SECRET_KEY = "testsecretkeyatleast32charslong1234567890"
 app_settings.DEBUG = True
 app_settings.LOG_LEVEL = logging.ERROR
@@ -111,3 +112,20 @@ async def test_refresh_token(test_user: User) -> RefreshToken:
         await session.commit()
         await session.refresh(token)
         return token
+
+@pytest_asyncio.fixture(autouse=True)
+async def mock_profile_service():
+    """
+    Перехватывает вызовы aiohttp.ClientSession.post.
+    Имитирует успешный ответ (201 Created) от сервиса профилей.
+    """
+    mock_response = MagicMock()
+    mock_response.status = 201
+    mock_response.text = AsyncMock(return_value='{"id": 1, "username": "testuser"}')
+
+    mock_context = MagicMock()
+    mock_context.__aenter__ = AsyncMock(return_value=mock_response)
+    mock_context.__aexit__ = AsyncMock(return_value=None)
+
+    with patch("aiohttp.ClientSession.post", return_value=mock_context):
+        yield
