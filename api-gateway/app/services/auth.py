@@ -33,14 +33,15 @@ async def register_user(db: AsyncSession, user: UserSchema, response: Response, 
         headers = {"X-Auth-User-ID": str(db_user.id)}
         session = request.app.state.aiohttp_session
 
+        logger.info(f"Registering user in profiles service", extra={"user": db_user.id})
         async with session.post(profile_url, json=profile_data, headers=headers) as resp:
             if resp.status != 201 and resp.status != 200:
-                error_detail = await resp.text()
-                logger.error(f"Profiles service returned {resp.status}", extra={"detail": error_detail})
                 raise ServiceUnavailableError("Profiles service failed")
+            else:
+                logger.debug(f"Profiles service returned {resp.status}", extra={"user": db_user.id})
 
     except Exception as e:
-        logger.warning(f"Rolling back registration: deleting user {db_user.id} due to profile creation failure")
+        logger.warning(f"Rolling back registration: deleting user due to profile creation failure", extra={"user": db_user.id})
         await _delete_user_by_id(db, db_user.id)
 
         if isinstance(e, ServiceUnavailableError):
@@ -52,6 +53,7 @@ async def register_user(db: AsyncSession, user: UserSchema, response: Response, 
     await store_refresh_token(db, db_user.id, refresh_token)
     set_refresh_cookie(response, refresh_token)
 
+    logger.info(f"User registered successfully", extra={"user_id": db_user.id})
     return TokenSchema(access_token=access_token)
 
 

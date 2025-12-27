@@ -83,7 +83,7 @@ async def service_not_found_handler(request: Request, exc: ServiceNotFoundError)
 
 async def service_unavailable_handler(request: Request, exc: ServiceUnavailableError):
     """Возвращает 503, если сервис недоступен."""
-    logging.warning(f"503 Service Unavailable", extra={"url": str(request.url), "exception": str(exc.message)})
+    logging.error(f"503 Service Unavailable", extra={"url": str(request.url), "exception": str(exc.message)})
     return JSONResponse(
         status_code=503,
         content={
