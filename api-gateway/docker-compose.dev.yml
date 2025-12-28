@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:${PG_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - gateway_postgres_data:/var/lib/postgresql/data
     networks:
       - istu_services_net
 
@@ -44,7 +44,7 @@ services:
       - istu_services_net
 
 volumes:
-  postgres_data:
+  gateway_postgres_data:
 
 networks:
   istu_services_net:
