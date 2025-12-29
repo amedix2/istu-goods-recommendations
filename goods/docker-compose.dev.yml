@@ -1,5 +1,5 @@
 services:
-  postgres:
+  goods-postgres:
     image: postgres:17.6-alpine
     container_name: goods-db-postgres
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: api.Dockerfile
     depends_on:
-      postgres:
+      goods-postgres:
         condition: service_started
     restart: unless-stopped
     ports:
