@@ -22,8 +22,6 @@ services:
     command: pytest /src/tests/ -v -s
     env_file:
       - ./.env
-    networks:
-      - istu_services_net
 
   profiles:
     container_name: profiles

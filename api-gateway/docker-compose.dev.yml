@@ -40,8 +40,6 @@ services:
       - "127.0.0.1:${PORT}:8000"
     env_file:
       - ./.env
-    networks:
-      - istu_services_net
 
 volumes:
   gateway_postgres_data:
