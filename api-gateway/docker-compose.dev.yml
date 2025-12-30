@@ -14,17 +14,6 @@ services:
     networks:
       - istu_services_net
 
-  api-gateway-test:
-    container_name: api-gateway-test
-    build:
-      context: .
-      dockerfile: test.Dockerfile
-    command: pytest /src/tests/ -v
-    env_file:
-      - ./.env
-    networks:
-      - istu_services_net
-
   api-gateway:
     container_name: api-gateway
     build:
@@ -38,6 +27,17 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:${PORT}:8000"
+    env_file:
+      - ./.env
+    networks:
+      - istu_services_net
+
+  api-gateway-test:
+    container_name: api-gateway-test
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: pytest /src/tests/ -v
     env_file:
       - ./.env
 

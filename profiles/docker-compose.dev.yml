@@ -14,15 +14,6 @@ services:
     networks:
       - istu_services_net
 
-  profiles-test:
-    container_name: profiles-test
-    build:
-      context: .
-      dockerfile: test.Dockerfile
-    command: pytest /src/tests/ -v -s
-    env_file:
-      - ./.env
-
   profiles:
     container_name: profiles
     build:
@@ -40,6 +31,15 @@ services:
       - ./.env
     networks:
       - istu_services_net
+
+  profiles-test:
+    container_name: profiles-test
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: pytest /src/tests/ -v -s
+    env_file:
+      - ./.env
 
 volumes:
   profiles_postgres_data:
