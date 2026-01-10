@@ -82,16 +82,13 @@ profiles/
 │   ├── models.py
 │   ├── repositories
 │   │   ├── __init__.py
-│   │   ├── media.py
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
-│   │   ├── media.py
 │   │   └── profiles.py
 │   ├── schemas.py
 │   ├── services
 │   │   ├── __init__.py
-│   │   ├── media.py
 │   │   └── profiles.py
 │   └── utils
 │       └── auth.py
