@@ -1,4 +1,4 @@
-# Profiles
+# Goods
 
 ---
 
@@ -10,12 +10,12 @@
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-> Запуск `profiles` произойдёт **только после успешного прохождения всех тестов**.
+> Запуск `goods` произойдёт **только после успешного прохождения всех тестов**.
 
 ### Запуск тестов отдельно
 
 ```bash
-docker compose -f docker-compose.dev.yml up --build profiles-test
+docker compose -f docker-compose.dev.yml up --build goods-test
 ```
 
 ---
@@ -67,7 +67,7 @@ cp .env-example .env
 ## Архитектура
 
 ```
-profiles/
+goods/
 ├── .env
 ├── .env-example
 ├── README.md
@@ -82,14 +82,17 @@ profiles/
 │   ├── models.py
 │   ├── repositories
 │   │   ├── __init__.py
-│   │   └── user.py
+│   │   ├── product.py
+│   │   └── review.py
 │   ├── routers
 │   │   ├── __init__.py
-│   │   └── profiles.py
+│   │   ├── products.py
+│   │   └── reviews.py
 │   ├── schemas.py
 │   ├── services
 │   │   ├── __init__.py
-│   │   └── profiles.py
+│   │   ├── products.py
+│   │   └── reviews.py
 │   └── utils
 │       └── auth.py
 ├── docker-compose.dev.yml
@@ -99,5 +102,6 @@ profiles/
 ├── test.Dockerfile
 └── tests
     ├── conftest.py
-    └── test_profiles.py
+    ├── test_products.py
+    └── test_reviews.py
 ```
