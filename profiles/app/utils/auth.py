@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_auth_user_id(x_auth_user_id: str | None = Header(None)) -> int | None:
+    """Извлекает user_id из заголовка."""
     logger.debug("Getting auth user ID", extra={"header_value": x_auth_user_id})
     if x_auth_user_id is None:
         raise UnauthorizedError("Authentication required")
@@ -16,3 +17,4 @@ def get_auth_user_id(x_auth_user_id: str | None = Header(None)) -> int | None:
         return user_id
     except ValueError:
         raise UnauthorizedError("Invalid user ID format")
+

@@ -5,34 +5,40 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 class DatabaseServiceError(Exception):
+    """Базовое исключение для ошибок сервиса базы данных."""
     pass
 
 
 class UnauthorizedError(DatabaseServiceError):
+    """Ошибка при попытке неавторизованного доступа."""
     def __init__(self, message="Unauthorized"):
         self.message = message
         super().__init__(self.message)
 
 
 class NotFoundError(DatabaseServiceError):
+    """Ошибка, если запрашиваемый ресурс не найден."""
     def __init__(self, message="Not found"):
         self.message = message
         super().__init__(self.message)
 
 
 class ForbiddenError(DatabaseServiceError):
+    """Ошибка при недостатке прав доступа."""
     def __init__(self, message="Forbidden"):
         self.message = message
         super().__init__(self.message)
 
 
 class ConflictError(DatabaseServiceError):
+    """Ошибка конфликта данных."""
     def __init__(self, message="Conflict"):
         self.message = message
         super().__init__(self.message)
 
 
 async def unauthorized_handler(request: Request, exc: UnauthorizedError):
+    """Возвращает 401 при неавторизованном доступе."""
     logging.warning("401 Unauthorized", extra={"url": str(request.url), "exception": str(exc.message)})
     return JSONResponse(
         status_code=401,
@@ -41,6 +47,7 @@ async def unauthorized_handler(request: Request, exc: UnauthorizedError):
 
 
 async def not_found_handler(request: Request, exc: NotFoundError):
+    """Возвращает 404, если ресурс не найден."""
     logging.warning("404 Not Found", extra={"url": str(request.url), "exception": str(exc.message)})
     return JSONResponse(
         status_code=404,
@@ -49,6 +56,7 @@ async def not_found_handler(request: Request, exc: NotFoundError):
 
 
 async def forbidden_handler(request: Request, exc: ForbiddenError):
+    """Возвращает 403 при запрете доступа."""
     logging.warning("403 Forbidden", extra={"url": str(request.url), "exception": str(exc.message)})
     return JSONResponse(
         status_code=403,
@@ -57,6 +65,7 @@ async def forbidden_handler(request: Request, exc: ForbiddenError):
 
 
 async def conflict_handler(request: Request, exc: ConflictError):
+    """Возвращает 409 при конфликте данных."""
     logging.warning("409 Conflict", extra={"url": str(request.url), "exception": str(exc.message)})
     return JSONResponse(
         status_code=409,
@@ -65,6 +74,7 @@ async def conflict_handler(request: Request, exc: ConflictError):
 
 
 async def sql_error_handler(request: Request, exc: SQLAlchemyError):
+    """Возвращает 500 при ошибке работы с базой данных."""
     logging.error("500 Database error", extra={"url": str(request.url), "exception": str(exc)})
     return JSONResponse(
         status_code=500,

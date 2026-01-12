@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 async def register_user(db: AsyncSession, user: UserSchema, response: Response, request: Request) -> TokenSchema:
+    """Бизнес-логика регистрации: создание профиля в бд, запрос к профилям, компенсация в случае ошибки."""
     existing_user = await get_user_by_username(db, user.username)
     if existing_user:
         raise InvalidCredentials("Username already exists")

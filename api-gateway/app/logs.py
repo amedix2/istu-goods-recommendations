@@ -73,6 +73,7 @@ class PrettyFormatter(logging.Formatter):
 
 def setup_logging(debug: bool, level: int, exclude_extra_fields=None):
     """
+    Инициализация логера.
     - dev (debug = True) -> PrettyFormatter
     - prod (debug = False) -> JSON
     """

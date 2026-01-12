@@ -7,7 +7,8 @@ from app.database import Base
 
 
 class User(Base):
-    __tablename__ = "users"  # Таблица пользователей
+    """Таблица пользователей"""
+    __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     username: Mapped[str] = mapped_column(unique=True, index=True)
@@ -19,11 +20,12 @@ class User(Base):
 
 
 class RefreshToken(Base):
-    __tablename__ = "refresh_tokens"  # Таблица refresh-токенов
+    """Таблица refresh-токенов"""
+    __tablename__ = "refresh_tokens"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     token: Mapped[str] = mapped_column(unique=True)
-    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)  # Время истечения токена
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
     user: Mapped["User"] = relationship(back_populates="refresh_tokens")

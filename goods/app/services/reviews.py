@@ -11,24 +11,6 @@ from app.exceptions import NotFoundError, ForbiddenError, ConflictError, Unautho
 logger = logging.getLogger(__name__)
 
 
-async def _recalculate_product_rating(db: AsyncSession, product_id: int):
-    """Служебная функция пересчета рейтинга товара."""
-    product = await get_product_by_id(db, product_id, joined_load=True)
-    if not product:
-        return
-
-    total_reviews = len(product.reviews)
-    if total_reviews > 0:
-        avg_rating = sum(r.rating for r in product.reviews) / total_reviews
-    else:
-        avg_rating = 0.0
-
-    product.rating = avg_rating
-    product.reviews_count = total_reviews
-    await db.commit()
-    logger.debug("Product rating recalculated", extra={"product_id": product_id, "new_rating": avg_rating})
-
-
 async def add_review_service(
         db: AsyncSession,
         product_id: int,
@@ -102,3 +84,21 @@ async def delete_review_service(db: AsyncSession, review_id: int, auth_user_id: 
     await _recalculate_product_rating(db, product_id)
 
     logger.info("Review deleted successfully", extra={"review_id": review_id})
+
+
+async def _recalculate_product_rating(db: AsyncSession, product_id: int):
+    """Служебная функция пересчета рейтинга товара."""
+    product = await get_product_by_id(db, product_id, joined_load=True)
+    if not product:
+        return
+
+    total_reviews = len(product.reviews)
+    if total_reviews > 0:
+        avg_rating = sum(r.rating for r in product.reviews) / total_reviews
+    else:
+        avg_rating = 0.0
+
+    product.rating = avg_rating
+    product.reviews_count = total_reviews
+    await db.commit()
+    logger.debug("Product rating recalculated", extra={"product_id": product_id, "new_rating": avg_rating})

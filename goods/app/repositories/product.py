@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 async def create_product(db: AsyncSession, joined_load: bool = False, **kwargs) -> Product:
+    """Создает новый продукт в базе данных."""
     logger.debug("Creating product", extra={"product_name": kwargs.get("name"), "product_price": kwargs.get("price")})
     try:
         product = Product(**kwargs)
@@ -29,6 +30,7 @@ async def create_product(db: AsyncSession, joined_load: bool = False, **kwargs) 
 
 
 async def get_product_by_id(db: AsyncSession, product_id: int, joined_load: bool = False) -> Product | None:
+    """Возвращает продукт по его идентификатору."""
     logger.debug("Fetching product by ID", extra={"product_id": product_id})
     stmt = select(Product).where(Product.id == product_id)
     if joined_load:
@@ -42,6 +44,7 @@ async def get_product_by_id(db: AsyncSession, product_id: int, joined_load: bool
 
 async def get_all_products(db: AsyncSession, skip: int = 0, limit: int = 10, joined_load: bool = False) -> list[
     Product]:
+    """Возвращает список продуктов с пагинацией."""
     logger.debug("Fetching products", extra={"skip": skip, "limit": limit})
     stmt = select(Product).offset(skip).limit(limit)
     if joined_load:
@@ -56,6 +59,7 @@ async def get_all_products(db: AsyncSession, skip: int = 0, limit: int = 10, joi
 
 
 async def update_product(db: AsyncSession, product: Product, **kwargs) -> Product:
+    """Обновляет данные продукта."""
     logger.debug("Updating product", extra={"product_id": product.id})
     try:
         for key, value in kwargs.items():
@@ -70,6 +74,7 @@ async def update_product(db: AsyncSession, product: Product, **kwargs) -> Produc
 
 
 async def delete_product(db: AsyncSession, product: Product) -> None:
+    """Удаляет продукт из базы данных."""
     logger.debug("Deleting product", extra={"product_id": product.id})
     try:
         await db.delete(product)

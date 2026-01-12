@@ -23,6 +23,7 @@ async def add_review(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Добавляет отзыв к продукту."""
     logger.info("Add review endpoint called", extra={"product_id": product_id, "user_id": auth_user_id})
     return await add_review_service(db, product_id, auth_user_id, review_data)
 
@@ -34,6 +35,7 @@ async def update_review(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Обновляет отзыв."""
     logger.info("Update review endpoint called", extra={"review_id": review_id, "user_id": auth_user_id})
     return await update_review_service(db, review_id, update_data, auth_user_id)
 
@@ -44,6 +46,7 @@ async def delete_review(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int | None = Depends(get_auth_user_id),
 ):
+    """Удаляет отзыв."""
     logger.info("Delete review endpoint called", extra={"review_id": review_id, "user_id": auth_user_id})
     await delete_review_service(db, review_id, auth_user_id)
     return {"detail": "Review deleted"}

@@ -23,6 +23,7 @@ async def create_profile(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Создает новый профиль пользователя."""
     logger.info("Create profile endpoint called", extra={"user_id": auth_user_id})
     return await create_user_service(db, auth_user_id, user_data)
 
@@ -32,12 +33,14 @@ async def get_profile_self(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Возвращает профиль текущего пользователя."""
     logger.info("Get self profile endpoint called", extra={"user_id": auth_user_id})
     return await get_user_profile(db, auth_user_id)
 
 
 @router.get("/{user_id}", response_model=UserSchema)
 async def get_profile(user_id: int, db: AsyncSession = Depends(get_session)):
+    """Возвращает профиль пользователя по ID."""
     logger.info("Get profile endpoint called", extra={"user_id": user_id})
     return await get_user_profile(db, user_id)
 
@@ -48,6 +51,7 @@ async def update_profile_self(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Обновляет профиль текущего пользователя."""
     logger.info("Update self profile endpoint called", extra={"user_id": auth_user_id})
     return await update_user_service(db, auth_user_id, update_data)
 
@@ -57,6 +61,7 @@ async def delete_profile_self(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Удаляет профиль текущего пользователя."""
     logger.info("Delete self profile endpoint called", extra={"user_id": auth_user_id})
     await delete_user_service(db, auth_user_id)
     return {"detail": "User deleted"}

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 async def create_product_service(db: AsyncSession, product_data: ProductCreateSchema, user_id: int) -> ProductSchema:
-    """Создание товара с привязкой к пользователю."""
+    """Создает товар с привязкой к пользователю."""
     logger.info("Creating product service", extra={"product_name": product_data.name, "user_id": user_id})
     try:
         product = await create_product(
@@ -32,6 +32,7 @@ async def create_product_service(db: AsyncSession, product_data: ProductCreateSc
 
 
 async def get_product(db: AsyncSession, product_id: int) -> ProductSchema:
+    """Возвращает товар по идентификатору."""
     logger.info("Getting product service", extra={"product_id": product_id})
     product = await get_product_by_id(db, product_id, joined_load=False)
     if not product:
@@ -40,6 +41,7 @@ async def get_product(db: AsyncSession, product_id: int) -> ProductSchema:
 
 
 async def get_product_details(db: AsyncSession, product_id: int) -> ProductSchema:
+    """Возвращает товар с деталями."""
     logger.info("Getting product details", extra={"product_id": product_id})
     product = await get_product_by_id(db, product_id, joined_load=True)
     if not product:
@@ -48,6 +50,7 @@ async def get_product_details(db: AsyncSession, product_id: int) -> ProductSchem
 
 
 async def list_products(db: AsyncSession, skip: int = 0, limit: int = 10) -> list[ProductShortSchema]:
+    """Возвращает список товаров."""
     logger.info("Listing products")
     products = await get_all_products(db, skip=skip, limit=limit, joined_load=False)
     return [ProductShortSchema.model_validate(p) for p in products]
@@ -59,7 +62,7 @@ async def update_product_service(
         product_data: ProductUpdateSchema,
         user_id: int
 ) -> ProductSchema:
-    """Обновление товара (только владелец)."""
+    """Обновляет товар."""
     logger.info("Updating product service", extra={"product_id": product_id, "user_id": user_id})
     product = await get_product_by_id(db, product_id, joined_load=True)
     if not product:
@@ -77,7 +80,7 @@ async def update_product_service(
 
 
 async def delete_product_service(db: AsyncSession, product_id: int, user_id: int) -> None:
-    """Удаление товара (только владелец)."""
+    """Удаляет товар."""
     logger.info("Deleting product service", extra={"product_id": product_id, "user_id": user_id})
     product = await get_product_by_id(db, product_id)
     if not product:

@@ -3,6 +3,7 @@ from app.database import Base
 
 
 class User(Base):
+    """Таблица пользователей."""
     __tablename__ = "users"
 
     user_id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=False)  # из api-gateway

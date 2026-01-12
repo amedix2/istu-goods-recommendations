@@ -24,12 +24,14 @@ async def create_product(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Создает новый продукт."""
     logger.info("Create product endpoint called", extra={"user_id": auth_user_id})
     return await create_product_service(db, product_data, user_id=auth_user_id)
 
 
 @router.get("/{product_id}", response_model=ProductSchema)
 async def get_product(product_id: int, db: AsyncSession = Depends(get_session)):
+    """Возвращает продукт по идентификатору."""
     logger.info("Get product endpoint called", extra={"product_id": product_id})
     return await get_product_details(db, product_id)
 
@@ -41,6 +43,7 @@ async def update_product(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Обновляет данные продукта."""
     logger.info("Update product endpoint called", extra={"product_id": product_id, "user_id": auth_user_id})
     return await update_product_service(db, product_id, update_data, user_id=auth_user_id)
 
@@ -51,6 +54,7 @@ async def delete_product(
         db: AsyncSession = Depends(get_session),
         auth_user_id: int = Depends(get_auth_user_id),
 ):
+    """Удаляет продукт."""
     logger.info("Delete product endpoint called", extra={"product_id": product_id, "user_id": auth_user_id})
     await delete_product_service(db, product_id, user_id=auth_user_id)
     return {"detail": "Product deleted"}
@@ -62,5 +66,6 @@ async def get_products(
         limit: int = 10,
         db: AsyncSession = Depends(get_session)
 ):
+    """Возвращает список продуктов."""
     logger.info("List products endpoint called", extra={"skip": skip, "limit": limit})
     return await list_products(db, skip=skip, limit=limit)

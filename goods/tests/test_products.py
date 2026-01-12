@@ -2,8 +2,8 @@ import pytest
 from httpx import AsyncClient
 
 
-# Хедер, имитирующий Gateway
 def auth_header(user_id: int):
+    """Возвращает заголовок авторизации для пользователя."""
     return {"X-Auth-User-ID": str(user_id)}
 
 

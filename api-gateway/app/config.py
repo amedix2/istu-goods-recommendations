@@ -6,6 +6,10 @@ from pytimeparse import parse
 
 
 class Settings(BaseSettings):
+    """Класс настроек приложения.
+    Использует Pydantic BaseSettings для загрузки и валидации конфигурации
+    из переменных окружения и файла .env.
+    """
     # Параметры подключения к PostgreSQL
     DB_USER: str
     DB_PASSWORD: str
@@ -43,6 +47,7 @@ class Settings(BaseSettings):
     @field_validator("LOG_LEVEL", mode="before")
     @classmethod
     def parse_log_level(cls, v):
+        """Парсит уровень логирования из строки или числа."""
         if isinstance(v, int):
             return v
         if isinstance(v, str):
@@ -52,6 +57,7 @@ class Settings(BaseSettings):
     @field_validator("JWT_SECRET_KEY")
     @classmethod
     def validate_jwt_secret(cls, v: str) -> str:
+        """Проверяет минимальную длину секретного ключа JWT."""
         if len(v) < 32:
             raise ValueError("JWT_SECRET_KEY must be at least 32 characters long")
         return v
@@ -59,6 +65,7 @@ class Settings(BaseSettings):
     @field_validator("DEBUG", mode="before")
     @classmethod
     def parse_debug(cls, v):
+        """Преобразует значение DEBUG к логическому типу."""
         if isinstance(v, bool):
             return v
         if isinstance(v, (int, float)):
@@ -70,6 +77,7 @@ class Settings(BaseSettings):
     @field_validator("ACCESS_TOKEN_EXPIRE", mode="before")
     @classmethod
     def parse_access_token_time(cls, v) -> int:
+        """Парсит время жизни access-токена в секундах."""
         if isinstance(v, int):
             return v
         parsed_time = parse(v)
@@ -80,6 +88,7 @@ class Settings(BaseSettings):
     @field_validator("REFRESH_TOKEN_EXPIRE", mode="before")
     @classmethod
     def parse_refresh_token_time(cls, v) -> int:
+        """Парсит время жизни refresh-токена в секундах."""
         if isinstance(v, int):
             return v
         parsed_time = parse(v)
@@ -90,6 +99,7 @@ class Settings(BaseSettings):
     @field_validator("POOL_TIMEOUT", mode="before")
     @classmethod
     def parse_pool_timeout_time(cls, v) -> int:
+        """Парсит таймаут ожидания соединения из пула БД."""
         if isinstance(v, int):
             return v
         parsed_time = parse(v)
@@ -100,6 +110,7 @@ class Settings(BaseSettings):
     @field_validator("POOL_RECYCLE", mode="before")
     @classmethod
     def parse_pool_recycle_time(cls, v) -> int:
+        """Парсит интервал переработки соединений пула БД."""
         if isinstance(v, int):
             return v
         parsed_time = parse(v)
@@ -110,6 +121,7 @@ class Settings(BaseSettings):
     @field_validator("TOTAL_TIMEOUT", mode="before")
     @classmethod
     def parse_total_timeout_time(cls, v) -> int:
+        """Парсит общий таймаут HTTP-запросов к микросервисам."""
         if isinstance(v, int):
             return v
         parsed_time = parse(v)
@@ -120,4 +132,5 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
+# Глобальный экземпляр настроек приложения
 settings = Settings()

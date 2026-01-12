@@ -3,11 +3,13 @@ from httpx import AsyncClient
 
 
 def auth_header(user_id: int):
+    """Возвращает заголовок авторизации для пользователя."""
     return {"X-Auth-User-ID": str(user_id)}
 
 
 @pytest.mark.asyncio
 async def test_add_review_success(async_client, test_product):
+    """Создает отзыв и проверяет обновление рейтинга продукта."""
     response = await async_client.post(
         f"/reviews/{test_product.id}",
         json={"rating": 5, "text": "Perfect"},
@@ -24,7 +26,7 @@ async def test_add_review_success(async_client, test_product):
 
 @pytest.mark.asyncio
 async def test_add_duplicate_review(async_client: AsyncClient, test_product):
-    """Запрет на повторный отзыв от одного пользователя."""
+    """Запрещает добавление повторного отзыва от одного пользователя."""
     payload = {"rating": 4}
     # Первый отзыв
     await async_client.post(
@@ -45,7 +47,7 @@ async def test_add_duplicate_review(async_client: AsyncClient, test_product):
 
 @pytest.mark.asyncio
 async def test_add_review_invalid_rating(async_client: AsyncClient, test_product):
-    """Валидация рейтинга (должен быть 1-5)."""
+    """Валидация рейтинга: значение должно быть 1-5."""
     payload = {"rating": 6}  # Некорректно
     response = await async_client.post(
         f"/reviews/{test_product.id}",
@@ -57,6 +59,7 @@ async def test_add_review_invalid_rating(async_client: AsyncClient, test_product
 
 @pytest.mark.asyncio
 async def test_update_review(async_client, test_product):
+    """Обновляет существующий отзыв и проверяет рейтинг продукта."""
     # 1. Создаем отзыв
     res = await async_client.post(
         f"/reviews/{test_product.id}",
@@ -80,7 +83,7 @@ async def test_update_review(async_client, test_product):
 
 @pytest.mark.asyncio
 async def test_update_review_forbidden(async_client: AsyncClient, test_product):
-    """Попытка изменить чужой отзыв."""
+    """Запрещает изменение чужого отзыва."""
     # Отзыв от user 2
     create_resp = await async_client.post(
         f"/reviews/{test_product.id}",
@@ -100,6 +103,7 @@ async def test_update_review_forbidden(async_client: AsyncClient, test_product):
 
 @pytest.mark.asyncio
 async def test_delete_review(async_client, test_product):
+    """Удаляет отзыв и проверяет обновление рейтинга продукта."""
     # 1. Создаем
     res = await async_client.post(f"/reviews/{test_product.id}", json={"rating": 5}, headers=auth_header(2))
     review_id = res.json()["id"]
@@ -116,6 +120,7 @@ async def test_delete_review(async_client, test_product):
 
 @pytest.mark.asyncio
 async def test_rating_aggregation(async_client, test_product):
+    """Проверяет правильное усреднение рейтинга по нескольким отзывам."""
     await async_client.post(f"/reviews/{test_product.id}", json={"rating": 5}, headers=auth_header(2))
     await async_client.post(f"/reviews/{test_product.id}", json={"rating": 1}, headers=auth_header(3))
 

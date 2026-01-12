@@ -4,6 +4,7 @@ from app.database import Base
 
 
 class Product(Base):
+    """Таблица продуктов."""
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -21,6 +22,7 @@ class Product(Base):
 
 
 class Review(Base):
+    """Таблица отзывов."""
     __tablename__ = "reviews"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)

@@ -13,12 +13,14 @@ router = APIRouter()
 
 @router.post("/register", response_model=TokenSchema)
 async def register(user: UserSchema, response: Response, request: Request, db: AsyncSession = Depends(get_session)):
+    """Эндпоинт регистрации нового пользователя"""
     logger.info("Register endpoint called", extra={"username": user.username})
     return await register_user(db, user, response, request)
 
 
 @router.post("/login", response_model=TokenSchema)
 async def login(user: UserSchema, response: Response, db: AsyncSession = Depends(get_session)):
+    """Эндпоинт аутентификации пользователя"""
     logger.info("Login endpoint called", extra={"username": user.username})
     return await login_user(db, user, response)
 
@@ -28,6 +30,7 @@ async def refresh(
         response: Response,
         refresh_token: str = Cookie(None),
         db: AsyncSession = Depends(get_session)):
+    """Эндпоинт обновления access-токена по refresh-токену"""
     logger.info("Refresh token endpoint called")
     return await refresh_access_token(db, refresh_token, response)
 
@@ -37,5 +40,6 @@ async def logout(
         response: Response,
         refresh_token: str = Cookie(None),
         db: AsyncSession = Depends(get_session)):
+    """Эндпоинт выхода пользователя и инвалидирования refresh-токена"""
     logger.info("Logout endpoint called")
     return await logout_user(db, refresh_token, response)

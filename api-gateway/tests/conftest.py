@@ -50,6 +50,7 @@ app.dependency_overrides[get_session] = override_get_session
 
 @pytest_asyncio.fixture(autouse=True)
 def override_engine(monkeypatch):
+    """Подменяет движок БД в модуле database."""
     monkeypatch.setattr("app.database.engine", test_engine)
 
 
